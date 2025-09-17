@@ -10,7 +10,11 @@ import HelloWorld from './components/HelloWorld.vue'
     <a href="https://vuejs.org/" target="_blank">
       <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
     </a>
+<<<<<<< HEAD
     <h1>HOLA MUNDO SOY UN CAPO</h1>
+=======
+    <h2>hola mundo, estoy a prueba</h2>
+>>>>>>> 18c1f5f5cc69e12de35e4e017d5330222a611a19
   </div>
   <HelloWorld msg="Vite + Vue" />
 </template>
