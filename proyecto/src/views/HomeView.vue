@@ -17,9 +17,13 @@
       </div>
     </div>
   </section>
+  <div>
+    <MapComponent />
+  </div>
 </template>
 
 <script setup>
+import MapComponent from '../components/Map.vue';
 // aca mandamos logica de buscador 
 </script>
 
