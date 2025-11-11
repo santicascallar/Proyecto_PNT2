@@ -1,48 +1,84 @@
-<script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { useRestaurants } from '../stores/restaurants'
-import RestaurantCard from '../components/RestaurantCard.vue'
-import FiltersPanel from '../components/FiltersPanel.vue'
-import BookingDrawer from '../components/BookingDrawer.vue'
-
-const store = useRestaurants()
-const route = useRoute()
-const filters = ref({ cuisine:'', price:'', option:'' })
-const open = ref(false)
-const selected = ref(null)
-
-onMounted(() => { store.fetch() })   
-
-const list = computed(() => {
-  const term = (route.query.term || '').toString().toLowerCase()
-  return store.list.filter(r => {
-    const matchesTerm = !term || r.name.toLowerCase().includes(term) || r.cuisine.toLowerCase().includes(term)
-    const matchesCuisine = !filters.value.cuisine || r.cuisine === filters.value.cuisine
-    const matchesPrice = !filters.value.price || r.price === filters.value.price
-    return matchesTerm && matchesCuisine && matchesPrice
-  })
-})
-
-function openBook(r){ selected.value=r; open.value=true }
-function confirm(){ open.value=false; alert('Reserva registrada (mock)') }
-</script>
-
 <template>
-  <section class="container">
-    <h2 class="section-title">Restaurantes</h2>
-    <FiltersPanel v-model="filters" />
+  <section class="page">
+    <header class="page__header">
+      <h1 class="title">Restaurantes</h1>
+      <button class="refresh" @click="store.fetchAll" :disabled="store.loading">
+        {{ store.loading ? "Cargando..." : "Actualizar" }}
+      </button>
+    </header>
 
-    <p v-if="store.loading" class="muted">Cargando…</p>
-    <p v-else-if="store.error">{{ store.error }}</p>
+    <!-- estado: error -->
+    <p v-if="store.error" class="error">Error: {{ store.error }}</p>
 
-    <!-- TEST RÁPIDO: descomenta esta línea para ver el tamaño -->
-    <!-- <pre>items: {{ store.list.length }}</pre> -->
+    <!-- estado: cargando -->
+    <p v-else-if="store.loading" class="loading">Cargando restaurantes...</p>
 
+    <!-- listado -->
     <div v-else class="grid">
-      <RestaurantCard v-for="r in list" :key="r.id" :restaurant="r" @book="openBook" />
+      <RestaurantCard
+        v-for="r in store.list"
+        :key="r.id || r._id"
+        :restaurant="r"
+      />
+      <p v-if="store.list.length === 0" class="empty">No hay restaurantes.</p>
     </div>
-
-    <BookingDrawer :open="open" :restaurant="selected" @close="open=false" @confirm="confirm" />
   </section>
 </template>
+
+<script setup>
+import { onMounted } from "vue";
+import { useRestaurantsStore } from "../stores/restaurants";
+import RestaurantCard from "../components/RestaurantCard.vue";
+
+const store = useRestaurantsStore();
+
+onMounted(() => {
+  // si no hay datos cargados aún, pedilos
+  if (!store.list || store.list.length === 0) {
+    store.fetchAll();
+  }
+});
+</script>
+
+<style scoped>
+.page {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+}
+
+.page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.refresh {
+  padding: .5rem .9rem;
+  border: 1px solid #e5e7eb;
+  border-radius: .6rem;
+  background: #fff;
+  cursor: pointer;
+}
+.refresh[disabled] { opacity: .6; cursor: not-allowed; }
+
+.loading, .error, .empty {
+  padding: .75rem 1rem;
+  border-radius: .6rem;
+  background: #f9fafb;
+}
+
+.error { background: #fff1f2; color: #b91c1c; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+</style>

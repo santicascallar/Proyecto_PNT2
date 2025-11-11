@@ -1,20 +1,31 @@
 <template>
   <article class="card item">
+    <!-- Imagen del restaurante -->
     <div class="thumb">
-      <img :src="restaurant.cover" :alt="restaurant.name" loading="lazy" />
+      <img
+        :src="imageSrc"
+        :alt="restaurant.name"
+        loading="lazy"
+        @error="onImgError"
+      />
     </div>
 
+    <!-- Contenido -->
     <div class="body">
       <h3>{{ restaurant.name }}</h3>
-      <p class="muted">{{ restaurant.cuisine }} • {{ restaurant.price }} • ⭐ {{ restaurant.rating }}</p>
+      <p class="muted">
+        {{ restaurant.cuisine }} • {{ restaurant.priceRange || restaurant.price }} • {{ restaurant.rating }}
+      </p>
 
       <div class="meta">
-        <span class="tag">📍 Cerca tuyo</span>
-        <span class="tag">🕒 Hoy</span>
+        <span class="tag">Cerca tuyo</span>
+        <span class="tag">Hoy</span>
       </div>
 
       <div class="actions">
-        <router-link :to="`/restaurantes/${restaurant.id}`" class="ghost">Ver detalle</router-link>
+        <router-link :to="`/restaurantes/${restaurant._id || restaurant.id}`" class="ghost">
+          Ver detalle
+        </router-link>
         <button @click="$emit('book', restaurant)">Reservar</button>
       </div>
     </div>
@@ -22,36 +33,123 @@
 </template>
 
 <script setup>
-defineProps({ restaurant: Object })
+import { computed } from "vue";
+
+// props
+const props = defineProps({
+  restaurant: { type: Object, required: true }
+});
+
+// fallback local
+const FALLBACK = new URL("../assets/restaurant-placeholder.jpg", import.meta.url).href;
+
+// lógica de la imagen
+const imageSrc = computed(() =>
+  props.restaurant.imageUrl || // del backend
+  props.restaurant.cover ||    // tu campo actual
+  props.restaurant.image ||    // por si hay otro nombre
+  FALLBACK                     // si no hay imagen, fallback
+);
+
+// si la imagen falla al cargar  muestra fallback
+function onImgError(e) {
+  e.target.src = FALLBACK;
+}
 </script>
 
 <style scoped>
-
-.item{
-  display:flex; flex-direction:column; overflow:hidden;
+.item {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   border-radius: var(--radius);
+  background: #1b1b1b;
+  color: #fff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
 
-.thumb{
+.thumb {
   width: 100%;
-  aspect-ratio: 16 / 9;     
+  aspect-ratio: 16 / 9;
   overflow: hidden;
 }
 
-
-.thumb img{
-  width: 100%; height: 100%;
-  object-fit: cover; display:block;
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 /* Contenido */
-.body{ padding: 1rem; display:grid; gap:.5rem; }
-h3{ margin:0; font-size: 1.15rem; }
-.meta{ display:flex; gap:.4rem; flex-wrap:wrap; }
-.actions{ margin-top:.25rem; display:flex; gap:.5rem; }
-.ghost{
-  display:inline-flex; align-items:center; justify-content:center;
-  padding:.6rem .9rem; border-radius:999px; border:1px solid rgba(255,255,255,.16);
+.body {
+  padding: 1rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.muted {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.95rem;
+}
+
+.meta {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.tag {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+
+.actions {
+  margin-top: 0.25rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: transparent;
+  color: #fff;
+  transition: all 0.2s;
+}
+
+.ghost:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+button {
+  background: var(--accent, #3b82f6);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background: #2563eb;
 }
 </style>
