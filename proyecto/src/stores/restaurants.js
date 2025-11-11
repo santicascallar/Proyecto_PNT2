@@ -4,7 +4,7 @@ import {
   createRestaurant, updateRestaurant, deleteRestaurant,
 } from "../services/api.js";
 
-export const userRestaurants = defineStore("restaurants", {
+export const useRestaurantsStore = defineStore("restaurants", {
   state: () => ({
     list: [],
     selected: null,
