@@ -51,7 +51,6 @@ watch(local, (v) => emit('update:modelValue', { ...v }), { deep: true })
 
 <style scoped>
 
-/*prueba fondo desplegable*/ 
 select{
 appearance: none;
 -webkit-appearance: none;

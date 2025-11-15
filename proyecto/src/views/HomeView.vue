@@ -1,9 +1,7 @@
 <template>
   <main class="home">
-    <!-- HERO -->
     <section class="hero">
       <div class="hero__inner">
-        <!-- Tarjeta de búsqueda -->
         <div class="search-card">
           <h1 class="search-card__title">
             Encontrá lugares para comer con ReservaFácil
@@ -11,37 +9,24 @@
           <p class="search-card__subtitle">
             Descubrí restaurantes y mesas que se adaptan a tu plan de hoy.
           </p>
-
-          <!-- Formulario de búsqueda -->
           <form class="search-form" @submit.prevent="onSearch">
             <label class="fgroup">
-              <span>Ubicación</span>
-              <input v-model="term" type="text" placeholder="En la zona" />
+              <span>Nombre del restaurant</span>
+              <input v-model="term" type="text" placeholder="Ej: Don Julio" />
             </label>
-
-            <div class="grid-2">
-              <label class="fgroup">
-                <span>Fecha</span>
-                <input v-model="date" type="date" />
-              </label>
-              <label class="fgroup">
-                <span>Personas</span>
-                <input v-model.number="people" type="number" min="1" />
-              </label>
-            </div>
-
+            <label class="fgroup">
+              <span>Zona</span>
+              <input v-model="zona" type="text" placeholder="Ej: Palermo" />
+            </label>
             <button type="submit" class="btn-primary">Buscar</button>
           </form>
         </div>
-
-        <!-- Mapa -->
         <div class="hero__map">
-          <Map :restaurants="restaurantsWithGeo" @select="goToRestaurant" />
+          <Map :restaurants="restaurantsWithGeo" @select="openModal" />
+
         </div>
       </div>
     </section>
-
-    <!-- BENEFICIOS -->
     <section class="highlights container">
       <article class="card">
         <div class="ico">🛡️</div>
@@ -70,17 +55,10 @@
         </p>
       </article>
     </section>
-
-    <!-- PREGUNTAS FRECUENTES -->
     <section class="faq container">
       <h2>Respondemos tus preguntas</h2>
       <ul class="faq-list">
-        <li
-          v-for="(q, i) in faqs"
-          :key="i"
-          class="faq-item"
-          :class="{ open: openIndex === i }"
-        >
+        <li v-for="(q, i) in faqs" :key="i" class="faq-item" :class="{ open: openIndex === i }">
           <button class="faq-btn" @click="toggle(i)">
             <span>{{ q.q }}</span>
             <span class="chev" :class="{ open: openIndex === i }">▾</span>
@@ -92,6 +70,16 @@
       </ul>
     </section>
   </main>
+  <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
+    <div class="modal">
+      <RestaurantCard :restaurant="selectedRestaurant" />
+
+      <div class="modal-actions">
+        <button @click="showModal = false">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
 </template>
 
 <script setup>
@@ -99,11 +87,15 @@ import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import Map from "@/components/Map.vue";
 import * as api from "@/services/api.js";
+import RestaurantCard from "@/components/RestaurantCard.vue";
 
 const router = useRouter();
 const term = ref("");
 const people = ref(2);
 const date = ref("");
+const zona = ref("");
+const selectedRestaurant = ref(null);
+const showModal = ref(false);
 
 const restaurants = ref([]);
 
@@ -132,43 +124,45 @@ const restaurantsWithGeo = computed(() =>
     })
     .filter((r) => r.location && typeof r.location.lat === "number")
 );
+function onSearchByName() {
+  const t = term.value.trim().toLowerCase();
 
-function onSearch() {
+  const matches = restaurants.value.filter(r =>
+    r.name.toLowerCase().includes(t)
+  );
+
+  if (matches.length === 1) {
+    const id = matches[0]._id || matches[0].id;
+    return router.push(`/restaurantes/${id}`);
+  }
+
   router.push({
     path: "/restaurantes",
     query: {
-      term: term.value || "",
-      people: people.value || 2,
-      date: date.value || "",
-    },
+      name: term.value,
+      people: people.value,
+      date: date.value
+    }
   });
 }
-
-function goToRestaurant(r) {
-  const id = r._id || r.id;
-  if (id) router.push(`/restaurantes/${id}`);
+function onSearchByZona() {
+  const z = zona.value.trim().toLowerCase();
+  return router.push(`/restaurantes/zona/${zona.value}`);
 }
 
-/* Preguntas frecuentes */
-const openIndex = ref(-1);
-const faqs = ref([
-  {
-    q: "¿Cómo funciona ReservaFácil?",
-    a: "Buscás, filtrás por fecha/personas y reservás tu mesa en segundos.",
-  },
-  {
-    q: "¿Cómo aprovecho los filtros de búsqueda?",
-    a: "Podés filtrar por tipo de cocina, precio, cercanía y horarios disponibles.",
-  },
-  {
-    q: "¿Necesito confirmar con el restaurante?",
-    a: "No. Te enviamos la confirmación y el restaurante recibe tu reserva al instante.",
-  },
-  {
-    q: "¿Puedo cancelar mi reserva?",
-    a: "Sí, según políticas del restaurante. En muchos casos hay cancelación flexible.",
-  },
-]);
+function onSearch() {
+  if (zona.value.trim() !== "") {
+    return onSearchByZona();
+  }
+
+  return onSearchByName();
+}
+
+
+function openModal(r) {
+  selectedRestaurant.value = r;
+  showModal.value = true;
+}
 
 function toggle(i) {
   openIndex.value = openIndex.value === i ? -1 : i;
@@ -176,14 +170,12 @@ function toggle(i) {
 </script>
 
 <style scoped>
-/* === ESTRUCTURA GENERAL === */
 .home {
   color: #e6eefc;
   background: #0b0f16;
   min-height: 100vh;
 }
 
-/* === HERO === */
 .hero {
   display: flex;
   justify-content: center;
@@ -216,7 +208,6 @@ function toggle(i) {
   margin-bottom: 1rem;
 }
 
-/* Formulario */
 .fgroup {
   display: grid;
   gap: 0.3rem;
@@ -257,7 +248,6 @@ input {
   color: #e6eefc;
 }
 
-/* === FAQ === */
 .faq h2 {
   font-size: 1.8rem;
   margin-bottom: 1rem;
@@ -297,6 +287,7 @@ input {
 .chev {
   transition: transform 0.25s ease;
 }
+
 .chev.open {
   transform: rotate(180deg);
 }
@@ -304,5 +295,43 @@ input {
 .faq-panel {
   padding: 0 1.25rem 1rem;
   color: #a4b0be;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal {
+  background: #1b1b1b;
+  width: 90%;
+  max-width: 420px;
+  padding: 1rem;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, .4);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.modal-actions button {
+  background: #3b82f6;
+  border: none;
+  border-radius: 10px;
+  padding: .6rem 1rem;
+  color: white;
+  cursor: pointer;
+}
+
+.modal-actions button:hover {
+  background: #2563eb;
 }
 </style>

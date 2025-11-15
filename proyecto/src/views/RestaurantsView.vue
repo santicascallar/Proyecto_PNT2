@@ -6,14 +6,8 @@
         {{ store.loading ? "Cargando..." : "Actualizar" }}
       </button>
     </header>
-
-    <!-- estado: error -->
     <p v-if="store.error" class="error">Error: {{ store.error }}</p>
-
-    <!-- estado: cargando -->
     <p v-else-if="store.loading" class="loading">Cargando restaurantes...</p>
-
-    <!-- listado -->
     <div v-else class="grid">
       <RestaurantCard
         v-for="r in store.list"
@@ -33,7 +27,6 @@ import RestaurantCard from "../components/RestaurantCard.vue";
 const store = useRestaurantsStore();
 
 onMounted(() => {
-  // si no hay datos cargados aún, pedilos
   if (!store.list || store.list.length === 0) {
     store.fetchAll();
   }
