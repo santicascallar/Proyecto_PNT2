@@ -37,6 +37,19 @@ export const updateRestaurant = (id, payload) =>
 export const deleteRestaurant = (id) =>
   request(`/restaurants/${id}`, { method: "DELETE" });
 
+// --- USUARIOS AUTH ---
+export const register = (payload) =>
+  request("/auth/register", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+export const login = (payload) =>
+  request("/auth/login", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
 
 export default {
   getRestaurants,
