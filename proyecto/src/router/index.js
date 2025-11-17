@@ -3,6 +3,7 @@ import HomeView from '@/views/HomeView.vue'
 
 const Home = () => import('../views/HomeView.vue')
 const Restaurants = () => import('../views/RestaurantsView.vue')
+const RestaurantsByZona = () => import('../views/RestaurantsByZonaView.vue')
 const Detail = () => import('../views/RestaurantDetailView.vue')
 const Reservations = () => import('../views/ReservationsView.vue')
 const Favorites = () => import('../views/FavoritesView.vue')
@@ -15,6 +16,7 @@ const Admin = () => import('../views/admin/AdminDashboardView.vue')
 const routes = [
   { path: '/', name: 'home', component: HomeView  },
   { path: '/restaurantes', name: 'restaurants', component: Restaurants },
+  { path: '/restaurantes/zona/:zona', name: 'restaurants-by-zona', component: RestaurantsByZona, props: true },
   { path: '/restaurantes/:id', name: 'restaurant-detail', component: Detail, props: true },
   { path: '/reservas', name: 'reservations', component: Reservations },
   { path: '/favoritos', name: 'favorites', component: Favorites },

@@ -7,7 +7,7 @@ import { onMounted, onBeforeUnmount, watch, ref } from 'vue'
 import L from 'leaflet'
 
 const props = defineProps({
-  restaurants: { type: Array, default: () => [] } // cada item: {_id/name, location:{lat,lng}, name, ...}
+  restaurants: { type: Array, default: () => [] }
 })
 const emit = defineEmits(['select'])
 
@@ -17,7 +17,7 @@ let map, markersLayer
 onMounted(() => {
   map = L.map(el.value, {
     zoomControl: true,
-    center: [-34.6037, -58.3816], // CABA
+    center: [-34.6037, -58.3816],
     zoom: 12
   })
 
@@ -59,7 +59,7 @@ function renderMarkers(list) {
 <style scoped>
 .map{
   width: 100%;
-  height: 520px;         /* se adapta al layout */
+  height: 520px;
   border-radius: 16px;
   overflow: hidden;
 }
