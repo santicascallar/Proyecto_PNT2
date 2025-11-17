@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 
-const USERS_KEY = 'rf_users'  // array de usuarios registrados
-const LS_KEY    = 'rf_user'   // usuario actualmente logueado
+const USERS_KEY = 'rf_users'
+const LS_KEY    = 'rf_user'
 
 function loadUsers() {
   try { return JSON.parse(localStorage.getItem(USERS_KEY) || '[]') } catch { return [] }

@@ -29,6 +29,6 @@ const password = ref('')
 
 async function onSubmit () {
   await auth.register({ name: name.value, email: email.value, password: password.value })
-  if (auth.user) router.push('/perfil')       // ✅ redirige si todo ok
+  if (auth.user) router.push('/perfil')
 }
 </script>

@@ -3,8 +3,8 @@
   --card:#111217;      /* tarjetas */
   --muted:#a7b0be;     /* textos secundarios */
   --text:#e6e9ef;      /* textos principales */
-  --brand:#5dd5c4;     /* acento */
-  --brand-2:#8aa7ff;   /* acento 2 */
+  --brand:#5dd5c4;     
+  --brand-2:#8aa7ff;   
   --radius:14px;
   --shadow:0 12px 30px rgba(0,0,0,.35);
 }
@@ -49,4 +49,71 @@ button:active{ transform: translateY(1px); }
 .tag{
   display:inline-flex; align-items:center; gap:.35rem;
   background: rgba(255,255,255,.06); padding:.35rem .6rem; border-radius: 999px; font-size:.85rem;
+}
+html, body, #app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+
+  background:
+    linear-gradient(
+      to right,
+      rgba(0,0,0,0.75) 0%,
+      rgba(0,0,0,0.55) 35%,
+      rgba(0,0,0,0.35) 60%,
+      rgba(0,0,0,0.55) 100%
+    ),
+    url("/fondo-inicio.jpg") center center / cover no-repeat; /* <-- así */
+  background-attachment: fixed;
+
+
+
+/* Animación de apertura/cierre a las preguntas*/
+.accordion__panel {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: all 0.3s ease;
+  color: var(--muted);
+  padding: 0 1.1rem;
+}
+
+.accordion__panel.show {
+  max-height: 200px; /* ajusta según tus respuestas */
+  opacity: 1;
+  padding: 0 1.1rem 1rem 1.1rem;
+}
+
+/* Botón con hover y transición */
+.accordion__btn {
+  width: 100%;
+  background: transparent;
+  color: var(--text);
+  border: none;
+  text-align: left;
+  padding: 1rem 1.1rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.accordion__btn:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+
+
 }

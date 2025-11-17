@@ -30,6 +30,7 @@
   </section>
 </template>
 
+
 <script setup>
 import { reactive, watch } from 'vue'
 
@@ -49,6 +50,25 @@ watch(local, (v) => emit('update:modelValue', { ...v }), { deep: true })
 </script>
 
 <style scoped>
+
+select{
+appearance: none;
+-webkit-appearance: none;
+-moz-appearance: none;
+background-color: rgba(30, 30, 30, 0.95);
+color:white;
+border: 1px solid rgba(255, 255, 255, 0.2);
+border-radius: 8px;
+padding: 0.6rem 1rem;
+font-size: 1rem;
+cursor: pointer;
+}
+
+select option {
+background-color: #1e1e1e;
+color: white;
+}
+
 .filters { display: flex; gap: 1rem; flex-wrap: wrap; margin: .5rem 0 1rem; }
 label { display: flex; flex-direction: column; gap: .25rem; }
 select {
