@@ -1,64 +1,59 @@
-import { defineStore } from 'pinia'
-import api from "../services/api.js"
+import { defineStore } from "pinia";
+import { loginRequest, registerRequest } from "../services/api.js";
 
-const LS_KEY = 'rf_user'   // usuario actualmente logueado
+const LS_USER = "rf_user";
+const LS_TOKEN = "rf_token";
 
-export const useAuth = defineStore('auth', {
+export const useAuth = defineStore("auth", {
   state: () => ({
-    user: JSON.parse(localStorage.getItem(LS_KEY) || 'null'),
+    user: JSON.parse(localStorage.getItem(LS_USER) || "null"),
+    token: localStorage.getItem(LS_TOKEN) || null,
     loading: false,
     error: null,
   }),
 
-
   getters: {
-    isLogged: (s) => !!s.user,
+    isLogged: (s) => !!s.token,
+    isAdmin: (s) => s.user?.role === "admin",
+    isClient: (s) => s.user?.role === "client",
   },
 
-
   actions: {
-    async register({ name, email, password }) {
+    async register(payload) {
+      this.loading = true;
+      this.error = null;
+
       try {
-        this.loading = true;
-        this.error = null;
+        const data = await registerRequest(payload);
 
-        //backend
-        const res = await api.register({
-          name,
-          email,
-          password,
-        });
+        this.user = data.user;
+        this.token = data.token;
 
-        this.user = res.user;
-        this.token = res.token;
+        localStorage.setItem(LS_USER, JSON.stringify(data.user));
+        localStorage.setItem(LS_TOKEN, data.token);
 
-        localStorage.setItem(LS_KEY, JSON.stringify(res.user));
-        localStorage.setItem("rf_token", res.token);
-
-      } catch (err) {
-        this.error = err.message || "Error al registrar";
-        this.user = null;
+      } catch (e) {
+        this.error = e.message || "Error al registrar";
       } finally {
         this.loading = false;
       }
     },
 
     async login(email, password) {
-     try {
-        this.loading = true;
-        this.error = null;
+      this.loading = true;
+      this.error = null;
 
-        const res = await api.login({ email, password });
+      try {
+        const data = await loginRequest({ email, password });
 
-        this.user = res.user;
-        this.token = res.token;
+        this.user = data.user;
+        this.token = data.token;
 
-        localStorage.setItem(LS_KEY, JSON.stringify(res.user));
-        localStorage.setItem("rf_token", res.token);
+        localStorage.setItem(LS_USER, JSON.stringify(data.user));
+        localStorage.setItem(LS_TOKEN, data.token);
 
-      } catch (err) {
-        this.error = err.message || "Credenciales inválidas";
-        this.user = null;
+      } catch (e) {
+        this.error = e.message || "Las credenciales son inválidas";
       } finally {
         this.loading = false;
       }
@@ -67,8 +62,28 @@ export const useAuth = defineStore('auth', {
     logout() {
       this.user = null;
       this.token = null;
-      localStorage.removeItem(LS_KEY);
-      localStorage.removeItem("rf_token");
+      localStorage.removeItem(LS_USER);
+      localStorage.removeItem(LS_TOKEN);
+    },
+
+    async updateProfile(data) {
+      try {
+        this.loading = true;
+        this.error = null;
+
+        const res = await updateUser(this.user._id, data, this.token);
+
+        // Actualiza store
+        this.user = res.user;
+        localStorage.setItem("rf_user", JSON.stringify(this.user));
+
+        return true;
+      } catch (e) {
+        this.error = e.message;
+        return false;
+      } finally {
+        this.loading = false;
+      }
     }
   }
-})
+});

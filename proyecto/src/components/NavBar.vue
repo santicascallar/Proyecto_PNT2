@@ -7,7 +7,8 @@
         <router-link to="/restaurantes">Restaurantes</router-link>
         <router-link to="/reservas">Mis reservas</router-link>
         <router-link to="/favoritos">Favoritos</router-link>
-        <router-link to="/perfil">Perfil</router-link>
+        <router-link to="/perfil">Mi perfil</router-link>
+        <router-link to="/admin" v-if="auth.isAdmin">Panel Admin</router-link>
       </nav>
 
       <div class="auth" v-if="!isLogged">
