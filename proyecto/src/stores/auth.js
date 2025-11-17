@@ -1,83 +1,89 @@
-import { defineStore } from 'pinia'
+import { defineStore } from "pinia";
+import { loginRequest, registerRequest } from "../services/api.js";
 
-const USERS_KEY = 'rf_users'
-const LS_KEY    = 'rf_user'
+const LS_USER = "rf_user";
+const LS_TOKEN = "rf_token";
 
-function loadUsers() {
-  try { return JSON.parse(localStorage.getItem(USERS_KEY) || '[]') } catch { return [] }
-}
-function saveUsers(users) {
-  localStorage.setItem(USERS_KEY, JSON.stringify(users))
-}
-
-export const useAuth = defineStore('auth', {
+export const useAuth = defineStore("auth", {
   state: () => ({
-    user: JSON.parse(localStorage.getItem(LS_KEY) || 'null'),
+    user: JSON.parse(localStorage.getItem(LS_USER) || "null"),
+    token: localStorage.getItem(LS_TOKEN) || null,
     loading: false,
     error: null,
   }),
+
   getters: {
-    isLogged: (s) => !!s.user,
+    isLogged: (s) => !!s.token,
+    isAdmin: (s) => s.user?.role === "admin",
+    isClient: (s) => s.user?.role === "client",
   },
+
   actions: {
-    async register({ name, email, password }) {
+    async register(payload) {
+      this.loading = true;
+      this.error = null;
+
       try {
-        this.loading = true
-        this.error = null
-        await new Promise(r => setTimeout(r, 400))
+        const data = await registerRequest(payload);
 
-        const users = loadUsers()
-        const exists = users.some(u => u.email.toLowerCase() === email.toLowerCase())
-        if (exists) {
-          this.error = 'Ese email ya está registrado'
-          return
-        }
+        this.user = data.user;
+        this.token = data.token;
 
-        const newUser = { id: Date.now(), name, email, password }
-        users.push(newUser)
-        saveUsers(users)
+        localStorage.setItem(LS_USER, JSON.stringify(data.user));
+        localStorage.setItem(LS_TOKEN, data.token);
 
-        // Autologin tras registrar
-        this.user = { id: newUser.id, name: newUser.name, email: newUser.email }
-        localStorage.setItem(LS_KEY, JSON.stringify(this.user))
       } catch (e) {
-        this.error = 'No pudimos registrar tu cuenta'
+        this.error = e.message || "Error al registrar";
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
 
     async login(email, password) {
+      this.loading = true;
+      this.error = null;
+
       try {
-        this.loading = true
-        this.error = null
-        await new Promise(r => setTimeout(r, 300))
+        const data = await loginRequest({ email, password });
 
-        const users = loadUsers()
-        const found = users.find(u =>
-          u.email.toLowerCase() === String(email).toLowerCase() &&
-          String(u.password) === String(password)
-        )
+        this.user = data.user;
+        this.token = data.token;
 
-        if (!found) {
-          this.error = 'Credenciales inválidas'
-          this.user = null
-          localStorage.removeItem(LS_KEY)
-          return
-        }
+        localStorage.setItem(LS_USER, JSON.stringify(data.user));
+        localStorage.setItem(LS_TOKEN, data.token);
 
-        this.user = { id: found.id, name: found.name, email: found.email }
-        localStorage.setItem(LS_KEY, JSON.stringify(this.user))
       } catch (e) {
-        this.error = 'No pudimos iniciar sesión'
+        this.error = e.message || "Las credenciales son inválidas";
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
 
     logout() {
-      this.user = null
-      localStorage.removeItem(LS_KEY)
+      this.user = null;
+      this.token = null;
+      localStorage.removeItem(LS_USER);
+      localStorage.removeItem(LS_TOKEN);
+    },
+
+    async updateProfile(data) {
+      try {
+        this.loading = true;
+        this.error = null;
+
+        const res = await updateUser(this.user._id, data, this.token);
+
+        // Actualiza store
+        this.user = res.user;
+        localStorage.setItem("rf_user", JSON.stringify(this.user));
+
+        return true;
+      } catch (e) {
+        this.error = e.message;
+        return false;
+      } finally {
+        this.loading = false;
+      }
     }
   }
-})
+});
