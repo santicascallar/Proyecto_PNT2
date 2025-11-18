@@ -29,7 +29,14 @@ export const updateUser = (id, payload) =>
     method: "PATCH",
     body: JSON.stringify(payload),
   });
-
+export const updateUserWithToken = (id, payload, token) =>
+  request(`/users/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+    headers: token
+      ? { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
+      : { "Content-Type": "application/json" },
+  });
 export const deleteUser = (id) =>
   request(`/users/${id}`, { method: "DELETE" });
 

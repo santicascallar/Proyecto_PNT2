@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { register as registerRequest, login as loginRequest } from "../services/auth.api.js";
+import { getUserById } from "../services/users.api.js";
 
 const LS_USER = "rf_user";
 const LS_TOKEN = "rf_token";
@@ -19,6 +20,19 @@ export const useAuth = defineStore("auth", {
   },
 
   actions: {
+    async loadUser() {
+      if (!this.user) return;
+      const id = this.user._id || this.user.id;
+
+      try {
+        const fresh = await getUserById(id);
+        this.user = fresh;
+        localStorage.setItem(LS_USER, JSON.stringify(fresh));
+      } catch (e) {
+        console.error("Error recargando usuario:", e);
+      }
+    },
+
     async register(payload) {
       this.loading = true;
       this.error = null;

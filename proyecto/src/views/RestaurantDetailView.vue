@@ -30,7 +30,7 @@ import { useRoute } from "vue-router";
 import { useRestaurantsStore } from "../stores/restaurants.js";
 import { useReservations } from "../stores/reservations.js";
 import { useAuth } from "../stores/auth.js";
-import { updateUser } from "../services/users.api.js";  // ⬅ IMPORTANTE
+import { updateUser, updateUserWithToken } from "../services/users.api.js";  // ⬅ IMPORTANTE
 import BookingDrawer from "../components/BookingDrawer.vue";
 
 const fallback = new URL("../assets/restaurant-placeholder.jpg", import.meta.url).href;
@@ -65,14 +65,19 @@ async function toggleFav() {
 
   const favs = auth.user.favorites || [];
   const newFavorites = favs.includes(restoId)
-    ? favs.filter(id => id !== restoId)
+    ? favs.filter((id) => id !== restoId)
     : [...favs, restoId];
+
+  const oldFavorites = Array.isArray(favs) ? [...favs] : [];
   auth.user.favorites = newFavorites;
 
   try {
-    await updateUser(userId, { favorites: newFavorites });
+    // Use the token-aware function so the backend can authorize the change
+    await updateUserWithToken(userId, { favorites: newFavorites }, auth.token);
   } catch (e) {
     console.error("Error actualizando favoritos", e);
+    // Revert local changes on failure
+    auth.user.favorites = oldFavorites;
     alert("No se pudo actualizar favoritos");
   }
 }
