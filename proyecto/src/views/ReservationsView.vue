@@ -34,12 +34,19 @@ import { computed, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useReservations } from "../stores/reservations.js";
 import { useAuth } from "../stores/auth.js";
+import { useRouter } from "vue-router";
 
 const store = useReservations();
 const auth = useAuth();
+const router = useRouter();
 const { list: reservations } = storeToRefs(store);
 
 onMounted(async () => {
+  if (!auth.isLogged) {
+    // Not logged in -> redirect to login
+    router.push({ name: "login", query: { redirect: "/reservas" } });
+    return;
+  }
   const userId = auth.user?._id || auth.user?.id;
   if (!userId) return;
   await store.fetchByUser(userId, auth.token);
