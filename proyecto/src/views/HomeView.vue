@@ -22,7 +22,7 @@
           </form>
         </div>
         <div class="hero__map">
-          <Map :restaurants="restaurantsWithGeo" @select="openModal" />
+          <Map :restaurants="filteredRestaurants || restaurantsWithGeo" @select="openModal" />
 
         </div>
       </div>
@@ -96,6 +96,7 @@ const date = ref("");
 const zona = ref("");
 const selectedRestaurant = ref(null);
 const showModal = ref(false);
+const filteredRestaurants = ref(null);
 
 const restaurants = ref([]);
 
@@ -107,14 +108,6 @@ onMounted(async () => {
     console.error("Error cargando restaurantes:", e);
   }
 });
-
-const coordsByName = {
-  "Casa Bella": { lat: -34.6037, lng: -58.3816 },
-  "Sabor Local": { lat: -34.603, lng: -58.44 },
-  "The Vegan Spot": { lat: -34.6, lng: -58.38 },
-  "Sushi Hana": { lat: -34.59, lng: -58.39 },
-  "Taco Town": { lat: -34.61, lng: -58.37 },
-};
 
 const restaurantsWithGeo = computed(() =>
   restaurants.value
@@ -151,11 +144,19 @@ function onSearchByZona() {
 }
 
 function onSearch() {
-  if (zona.value.trim() !== "") {
-    return onSearchByZona();
+  const name = term.value.trim().toLowerCase();
+  const z = zona.value.trim().toLowerCase();
+
+  let results = restaurants.value;
+
+  if (name) {
+    results = results.filter(r => r.name.toLowerCase().includes(name));
   }
 
-  return onSearchByName();
+  if (z) {
+    results = results.filter(r => r.zona?.toLowerCase().includes(z));
+  }
+  filteredRestaurants.value = results.length ? results : [];
 }
 
 

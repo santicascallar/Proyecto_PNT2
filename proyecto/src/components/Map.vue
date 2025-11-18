@@ -36,28 +36,31 @@ watch(() => props.restaurants, (list) => {
 }, { deep: true })
 
 function renderMarkers(list) {
-  if (!markersLayer) return
-  markersLayer.clearLayers()
-  const points = []
+  if (!markersLayer) return;
+
+  markersLayer.clearLayers();
+
+  const points = [];
 
   list.forEach(r => {
-    const loc = r?.location
-    if (!loc || typeof loc.lat !== 'number' || typeof loc.lng !== 'number') return
-    const m = L.marker([loc.lat, loc.lng]).addTo(markersLayer)
-    m.bindPopup(r.name || 'Restaurante')
-    m.on('click', () => emit('select', r))
-    points.push([loc.lat, loc.lng])
-  })
+    const loc = r.location;
+    if (!loc || typeof loc.lat !== 'number' || typeof loc.lng !== 'number') return;
 
-  if (points.length) {
-    const bounds = L.latLngBounds(points)
-    map.fitBounds(bounds, { padding: [30, 30] })
+    const marker = L.marker([loc.lat, loc.lng]).addTo(markersLayer);
+    marker.bindPopup(r.name || 'Restaurante');
+    marker.on('click', () => emit('select', r));
+
+    points.push([loc.lat, loc.lng]);
+  });
+  if (points.length > 0) {
+    const bounds = L.latLngBounds(points);
+    map.fitBounds(bounds, { padding: [50, 50] });
   }
 }
 </script>
 
 <style scoped>
-.map{
+.map {
   width: 100%;
   height: 520px;
   border-radius: 16px;
