@@ -21,10 +21,6 @@
         </li>
       </ul>
       <p v-else class="muted">No hay reservas anteriores.</p>
-
-      <p style="margin-top: 1rem">
-        Total personas próximas: <strong>{{ totalPeopleUpcoming }}</strong>
-      </p>
     </div>
   </section>
 </template>
@@ -43,7 +39,6 @@ const { list: reservations } = storeToRefs(store);
 
 onMounted(async () => {
   if (!auth.isLogged) {
-    // Not logged in -> redirect to login
     router.push({ name: "login", query: { redirect: "/reservas" } });
     return;
   }

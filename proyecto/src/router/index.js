@@ -35,8 +35,6 @@ const router = createRouter({
     return { top: 0 };
   },
 });
-
-// Simple auth guard: check for token in localStorage
 router.beforeEach((to) => {
   if (to.meta && to.meta.requiresAuth) {
     const token = localStorage.getItem("rf_token");

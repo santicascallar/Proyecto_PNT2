@@ -1,8 +1,8 @@
 :root{
-  --bg:#0b0c10;        /* fondo general */
-  --card:#111217;      /* tarjetas */
-  --muted:#a7b0be;     /* textos secundarios */
-  --text:#e6e9ef;      /* textos principales */
+  --bg:#0b0c10;
+  --card:#111217;
+  --muted:#a7b0be;
+  --text:#e6e9ef;
   --brand:#5dd5c4;     
   --brand-2:#8aa7ff;   
   --radius:14px;
@@ -74,12 +74,8 @@ body::before {
       rgba(0,0,0,0.35) 60%,
       rgba(0,0,0,0.55) 100%
     ),
-    url("/fondo-inicio.jpg") center center / cover no-repeat; /* <-- así */
+    url("/fondo-inicio.jpg") center center / cover no-repeat;
   background-attachment: fixed;
-
-
-
-/* Animación de apertura/cierre a las preguntas*/
 .accordion__panel {
   max-height: 0;
   overflow: hidden;
@@ -90,12 +86,10 @@ body::before {
 }
 
 .accordion__panel.show {
-  max-height: 200px; /* ajusta según tus respuestas */
+  max-height: 200px;
   opacity: 1;
   padding: 0 1.1rem 1rem 1.1rem;
 }
-
-/* Botón con hover y transición */
 .accordion__btn {
   width: 100%;
   background: transparent;

@@ -58,7 +58,6 @@ export const useReservations = defineStore("reservations", {
       this.error = null;
       try {
         const created = await createReservation(payload, token);
-        // push to local list for immediate UI update
         this.list.unshift(created);
         return created;
       } catch (e) {

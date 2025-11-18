@@ -72,11 +72,9 @@ async function toggleFav() {
   auth.user.favorites = newFavorites;
 
   try {
-    // Use the token-aware function so the backend can authorize the change
     await updateUserWithToken(userId, { favorites: newFavorites }, auth.token);
   } catch (e) {
     console.error("Error actualizando favoritos", e);
-    // Revert local changes on failure
     auth.user.favorites = oldFavorites;
     alert("No se pudo actualizar favoritos");
   }
