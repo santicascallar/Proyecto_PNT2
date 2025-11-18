@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import {
   getRestaurants, getRestaurantById,
   createRestaurant, updateRestaurant, deleteRestaurant,
-} from "../services/api.js";
+} from "../services/restaurants.api.js";
 
 export const useRestaurantsStore = defineStore("restaurants", {
   state: () => ({

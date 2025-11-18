@@ -1,15 +1,12 @@
 <template>
   <section v-if="r" class="detail-wrapper">
-
     <div class="detail-card">
       <img :src="r.cover || r.imageUrl || fallback" class="hero" />
 
       <div class="content">
         <h1 class="title">{{ r.name }}</h1>
 
-        <p class="meta">
-          {{ r.cuisine }} • {{ r.price }} • ⭐ {{ r.rating }}
-        </p>
+        <p class="meta">{{ r.cuisine }} • {{ r.price }} • ⭐ {{ r.rating }}</p>
 
         <p class="info-line">📍 {{ r.address }}</p>
         <p class="info-line">🏙️ Zona: {{ r.zona }}</p>
@@ -25,30 +22,52 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { useRestaurantsStore } from '../stores/restaurants'
-import BookingDrawer from '../components/BookingDrawer.vue'
+import { computed, ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import { useRestaurantsStore } from "../stores/restaurants.js";
+import { useReservations } from "../stores/reservations.js";
+import { useAuth } from "../stores/auth.js";
+import BookingDrawer from "../components/BookingDrawer.vue";
 
-const fallback = new URL("../assets/restaurant-placeholder.jpg", import.meta.url).href
+const fallback = new URL("../assets/restaurant-placeholder.jpg", import.meta.url).href;
 
-const route = useRoute()
-const store = useRestaurantsStore()
-const open = ref(false)
+const route = useRoute();
+const store = useRestaurantsStore();
+const open = ref(false);
+const reservations = useReservations();
+const auth = useAuth();
 onMounted(() => {
-  if (!store.list.length) store.fetchAll()
-})
-const r = computed(() =>
-  store.list.find(x => x.id == route.params.id || x._id == route.params.id)
-)
+  if (!store.list.length) store.fetchAll();
+});
+const r = computed(() => store.list.find((x) => x.id == route.params.id || x._id == route.params.id));
 
 function book() {
-  open.value = true
+  open.value = true;
 }
 
-function confirm() {
-  open.value = false
-  alert('Reserva OK (mock)')
+async function confirm(payload) {
+  // payload: { datetime, people, restaurantId }
+  open.value = false;
+  if (!auth.token) {
+    alert("Debes iniciar sesión para crear una reserva");
+    return;
+  }
+
+  const reservationBody = {
+    date: payload.datetime,
+    partySize: payload.people,
+    restaurant: r.value?._id || r.value?.id || payload.restaurantId,
+    // include user id if backend expects it; server may extract user from token
+    user: auth.user?._id || auth.user?.id,
+  };
+
+  try {
+    await reservations.create(reservationBody, auth.token);
+    alert("Reserva creada correctamente");
+  } catch (e) {
+    console.error("Error creando reserva", e);
+    alert("No se pudo crear la reserva: " + (e.message || e));
+  }
 }
 </script>
 

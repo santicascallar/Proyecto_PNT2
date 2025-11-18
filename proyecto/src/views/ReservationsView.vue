@@ -15,7 +15,7 @@
 <script setup>
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useReservations } from '../stores/reservations'
+import { useReservations } from '../stores/reservations.js'
 const store = useReservations()
 const { list: res } = storeToRefs(store)
 const totalPeople = computed(() => res.value.reduce((acc, r) => acc + Number(r.people || 0), 0))

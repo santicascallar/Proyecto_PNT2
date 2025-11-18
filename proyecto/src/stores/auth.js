@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { loginRequest, registerRequest } from "../services/api.js";
+import { register as registerRequest, login as loginRequest } from "../services/auth.api.js";
 
 const LS_USER = "rf_user";
 const LS_TOKEN = "rf_token";
@@ -22,18 +22,16 @@ export const useAuth = defineStore("auth", {
     async register(payload) {
       this.loading = true;
       this.error = null;
-
       try {
-        const data = await registerRequest(payload);
-
-        this.user = data.user;
-        this.token = data.token;
-
-        localStorage.setItem(LS_USER, JSON.stringify(data.user));
-        localStorage.setItem(LS_TOKEN, data.token);
-
+        const res = await registerRequest(payload);
+        this.user = res.user || res;
+        this.token = res.token || this.token;
+        localStorage.setItem(LS_USER, JSON.stringify(this.user));
+        if (res.token) localStorage.setItem(LS_TOKEN, res.token);
+        return res;
       } catch (e) {
         this.error = e.message || "Error al registrar";
+        throw e;
       } finally {
         this.loading = false;
       }
@@ -42,18 +40,16 @@ export const useAuth = defineStore("auth", {
     async login(email, password) {
       this.loading = true;
       this.error = null;
-
       try {
-        const data = await loginRequest({ email, password });
-
-        this.user = data.user;
-        this.token = data.token;
-
-        localStorage.setItem(LS_USER, JSON.stringify(data.user));
-        localStorage.setItem(LS_TOKEN, data.token);
-
+        const res = await loginRequest({ email, password });
+        this.user = res.user || res;
+        this.token = res.token || this.token;
+        localStorage.setItem(LS_USER, JSON.stringify(this.user));
+        if (res.token) localStorage.setItem(LS_TOKEN, res.token);
+        return res;
       } catch (e) {
         this.error = e.message || "Las credenciales son inválidas";
+        throw e;
       } finally {
         this.loading = false;
       }
@@ -65,25 +61,5 @@ export const useAuth = defineStore("auth", {
       localStorage.removeItem(LS_USER);
       localStorage.removeItem(LS_TOKEN);
     },
-
-    async updateProfile(data) {
-      try {
-        this.loading = true;
-        this.error = null;
-
-        const res = await updateUser(this.user._id, data, this.token);
-
-        // Actualiza store
-        this.user = res.user;
-        localStorage.setItem("rf_user", JSON.stringify(this.user));
-
-        return true;
-      } catch (e) {
-        this.error = e.message;
-        return false;
-      } finally {
-        this.loading = false;
-      }
-    }
-  }
+  },
 });

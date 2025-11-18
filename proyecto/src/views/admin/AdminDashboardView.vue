@@ -33,7 +33,7 @@
 
 <script setup>
 import { onMounted, ref } from "vue";
-import { getReservations } from "../../services/api.js";
+import { getReservations } from "../../services/reservations.api.js";
 
 const reservations = ref([]);
 const loading = ref(false);

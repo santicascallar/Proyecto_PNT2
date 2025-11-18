@@ -25,8 +25,8 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useAuth } from '../stores/auth'
-import { updateUser } from '../services/api.js'
+import { useAuth } from '../stores/auth.js'
+import { updateUser } from '../services/users.api.js'
 
 const auth = useAuth()
 
