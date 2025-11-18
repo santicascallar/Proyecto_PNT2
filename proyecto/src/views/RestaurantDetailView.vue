@@ -14,6 +14,9 @@
         <p class="description">{{ r.descripcion }}</p>
 
         <button class="btn-reserve" @click="book">Reservar</button>
+        <button class="fav-btn" @click="toggleFav">
+          {{ isFav ? "💗" : "🤍" }}
+        </button>
       </div>
     </div>
 
@@ -27,26 +30,58 @@ import { useRoute } from "vue-router";
 import { useRestaurantsStore } from "../stores/restaurants.js";
 import { useReservations } from "../stores/reservations.js";
 import { useAuth } from "../stores/auth.js";
+import { updateUser } from "../services/users.api.js";  // ⬅ IMPORTANTE
 import BookingDrawer from "../components/BookingDrawer.vue";
 
 const fallback = new URL("../assets/restaurant-placeholder.jpg", import.meta.url).href;
 
 const route = useRoute();
 const store = useRestaurantsStore();
-const open = ref(false);
 const reservations = useReservations();
 const auth = useAuth();
+
+const open = ref(false);
+
 onMounted(() => {
   if (!store.list.length) store.fetchAll();
 });
-const r = computed(() => store.list.find((x) => x.id == route.params.id || x._id == route.params.id));
+
+const r = computed(() =>
+  store.list.find((x) => x.id == route.params.id || x._id == route.params.id)
+);
+const isFav = computed(() => {
+  const userFavs = auth.user?.favorites || [];
+  const restoId = r.value?._id || r.value?.id;
+  return userFavs.includes(restoId);
+});
+async function toggleFav() {
+  if (!auth.user) {
+    alert("Debes iniciar sesión para marcar favoritos");
+    return;
+  }
+
+  const userId = auth.user._id || auth.user.id;
+  const restoId = r.value._id || r.value.id;
+
+  const favs = auth.user.favorites || [];
+  const newFavorites = favs.includes(restoId)
+    ? favs.filter(id => id !== restoId)
+    : [...favs, restoId];
+  auth.user.favorites = newFavorites;
+
+  try {
+    await updateUser(userId, { favorites: newFavorites });
+  } catch (e) {
+    console.error("Error actualizando favoritos", e);
+    alert("No se pudo actualizar favoritos");
+  }
+}
 
 function book() {
   open.value = true;
 }
 
 async function confirm(payload) {
-  // payload: { datetime, people, restaurantId }
   open.value = false;
   if (!auth.token) {
     alert("Debes iniciar sesión para crear una reserva");
@@ -57,7 +92,6 @@ async function confirm(payload) {
     date: payload.datetime,
     partySize: payload.people,
     restaurant: r.value?._id || r.value?.id || payload.restaurantId,
-    // include user id if backend expects it; server may extract user from token
     user: auth.user?._id || auth.user?.id,
   };
 
@@ -70,6 +104,7 @@ async function confirm(payload) {
   }
 }
 </script>
+
 
 <style scoped>
 .detail-wrapper {
@@ -138,5 +173,15 @@ async function confirm(payload) {
 
 .btn-reserve:hover {
   background: #2563eb;
+}
+
+.fav-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-size: 18px;
+  cursor: pointer;
+  line-height: 1;
 }
 </style>

@@ -29,8 +29,6 @@ import { useAuth } from '../stores/auth.js'
 import { updateUser } from '../services/users.api.js'
 
 const auth = useAuth()
-
-// Rellenar los valores iniciales
 const name = ref(auth.user?.name || "")
 const email = ref(auth.user?.email || "")
 
@@ -47,8 +45,6 @@ async function onSave() {
       name: name.value,
       email: email.value
     })
-
-    //actualizar el usuario logueado en el store
     auth.user.name = updated.name
     auth.user.email = updated.email
 
