@@ -86,7 +86,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import Map from "@/components/Map.vue";
-import * as api from "@/services/api.js";
+import * as api from "@/services/restaurants.api.js";
 import RestaurantCard from "@/components/RestaurantCard.vue";
 
 const router = useRouter();
