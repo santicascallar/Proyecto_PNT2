@@ -10,13 +10,14 @@
 
     <p v-if="store.error" class="error">Error: {{ store.error }}</p>
     <p v-else-if="store.loading" class="loading">Cargando favoritos...</p>
-
-    <div v-if="favorites.length === 0" class="no-favs">
+    <div v-else-if="favorites.length === 0" class="no-favs">
       💙 Aún no tienes restaurantes en favoritos
       <br />
       ¡Explora y agrega algunos!
     </div>
-
+    <div v-else class="grid">
+      <RestaurantCard v-for="r in favorites" :key="r.id || r._id" :restaurant="r" />
+    </div>
   </section>
 </template>
 
