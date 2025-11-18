@@ -5,10 +5,12 @@
 
       <nav class="links">
         <router-link to="/restaurantes">Restaurantes</router-link>
+
         <router-link v-if="isLogged" to="/reservas">Mis reservas</router-link>
-        <router-link to="/favoritos">Favoritos</router-link>
-        <router-link to="/perfil">Mi perfil</router-link>
-        <router-link to="/admin" v-if="auth.isAdmin">Panel Admin</router-link>
+        <router-link v-if="isLogged" to="/favoritos">Favoritos</router-link>
+        <router-link v-if="isLogged" to="/perfil">Mi perfil</router-link>
+
+        <router-link v-if="auth.isAdmin" to="/admin">Panel Admin</router-link>
       </nav>
 
       <div class="auth" v-if="!isLogged">
@@ -42,32 +44,39 @@ const logout = () => auth.logout();
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(12px);
 }
+
 .bar {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
+
 .brand {
   font-weight: 800;
   letter-spacing: 0.3px;
 }
+
 .links {
   margin-left: 1rem;
   display: flex;
   gap: 1rem;
 }
+
 .links a {
   color: var(--muted);
 }
+
 .links a.router-link-active {
   color: var(--text);
 }
+
 .auth {
   margin-left: auto;
   display: flex;
   gap: 0.6rem;
   align-items: center;
 }
+
 .ghost {
   padding: 0.55rem 0.8rem;
   border-radius: 999px;
@@ -75,6 +84,7 @@ const logout = () => auth.logout();
   color: var(--text);
   border: 1px solid rgba(255, 255, 255, 0.14);
 }
+
 .hello {
   color: var(--muted);
   margin-right: 0.4rem;
