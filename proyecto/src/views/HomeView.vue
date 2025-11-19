@@ -117,31 +117,6 @@ const restaurantsWithGeo = computed(() =>
     })
     .filter((r) => r.location && typeof r.location.lat === "number")
 );
-function onSearchByName() {
-  const t = term.value.trim().toLowerCase();
-
-  const matches = restaurants.value.filter(r =>
-    r.name.toLowerCase().includes(t)
-  );
-
-  if (matches.length === 1) {
-    const id = matches[0]._id || matches[0].id;
-    return router.push(`/restaurantes/${id}`);
-  }
-
-  router.push({
-    path: "/restaurantes",
-    query: {
-      name: term.value,
-      people: people.value,
-      date: date.value
-    }
-  });
-}
-function onSearchByZona() {
-  const z = zona.value.trim().toLowerCase();
-  return router.push(`/restaurantes/zona/${zona.value}`);
-}
 
 function onSearch() {
   const name = term.value.trim().toLowerCase();
@@ -154,7 +129,7 @@ function onSearch() {
   }
 
   if (z) {
-    results = results.filter(r => r.zona?.toLowerCase().includes(z));
+    results = results.filter(r => r.zone?.toLowerCase().includes(z));
   }
   filteredRestaurants.value = results.length ? results : [];
 }

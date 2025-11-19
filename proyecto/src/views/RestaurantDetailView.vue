@@ -9,9 +9,9 @@
         <p class="meta">{{ r.cuisine }} • {{ r.price }} • ⭐ {{ r.rating }}</p>
 
         <p class="info-line">📍 {{ r.address }}</p>
-        <p class="info-line">🏙️ Zona: {{ r.zona }}</p>
+        <p class="info-line">🏙️ Zona: {{ r.zone }}</p>
 
-        <p class="description">{{ r.descripcion }}</p>
+        <p class="description">{{ r.description }}</p>
 
         <button class="btn-reserve" @click="book">Reservar</button>
         <button class="fav-btn" @click="toggleFav">
