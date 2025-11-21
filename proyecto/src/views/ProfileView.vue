@@ -10,7 +10,8 @@
 
       <label>
         Contacto 
-        <input class="input" v-model="email" placeholder="Email" type="email" required />
+        <br></br>
+        <input class="input" v-model="phone" placeholder="Teléfono" type="phone" required />
       </label>
 
       <button :disabled="auth.loading" style="margin-top:.5rem;">
@@ -30,7 +31,7 @@ import { updateUser } from '../services/users.api.js'
 
 const auth = useAuth()
 const name = ref(auth.user?.name || "")
-const email = ref(auth.user?.email || "")
+const phone = ref(auth.user?.phone || "")
 
 async function onSave() {
   try {

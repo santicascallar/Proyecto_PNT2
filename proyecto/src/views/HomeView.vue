@@ -18,7 +18,11 @@
               <span>Zona</span>
               <input v-model="zona" type="text" placeholder="Ej: Palermo" />
             </label>
-            <button type="submit" class="btn-primary">Buscar</button>
+            <label class="fgroup">
+              <span>Tipo de comida</span>
+              <input v-model="foodType" type="text" placeholder="Ej: Japonesa" />
+            </label>
+            <v-rating v-model="rating" half-increments hover length="5" size="32" active-color="primary" />
           </form>
         </div>
         <div class="hero__map">
@@ -83,20 +87,20 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import Map from "@/components/Map.vue";
 import * as api from "@/services/restaurants.api.js";
 import RestaurantCard from "@/components/RestaurantCard.vue";
 
-const router = useRouter();
 const term = ref("");
-const people = ref(2);
-const date = ref("");
 const zona = ref("");
+const foodType = ref("");
 const selectedRestaurant = ref(null);
 const showModal = ref(false);
 const filteredRestaurants = ref(null);
+const rating = ref(null)
+
 
 const restaurants = ref([]);
 
@@ -120,19 +124,39 @@ const restaurantsWithGeo = computed(() =>
 
 function onSearch() {
   const name = term.value.trim().toLowerCase();
-  const z = zona.value.trim().toLowerCase();
+  const searchZone = zona.value.trim().toLowerCase();
+  const type = foodType.value.trim().toLowerCase();
+  const selectedRating = rating.value;
 
   let results = restaurants.value;
 
   if (name) {
-    results = results.filter(r => r.name.toLowerCase().includes(name));
+    results = results.filter(r =>
+      r.name.toLowerCase().includes(name)
+    );
   }
 
-  if (z) {
-    results = results.filter(r => r.zone?.toLowerCase().includes(z));
+  if (searchZone) {
+    results = results.filter(r =>
+      r.zone?.toLowerCase().includes(zonaBuscada)
+    );
   }
-  filteredRestaurants.value = results.length ? results : [];
+
+  if (type) {
+    results = results.filter(r =>
+      r.cuisine?.toLowerCase().includes(tipo)
+    );
+  }
+
+  if (selectedRating > 0) {
+    results = results.filter(r =>
+      (r.rating || 0) >= selectedRating
+    );
+  }
+
+  filteredRestaurants.value = results;
 }
+
 
 
 function openModal(r) {
@@ -143,6 +167,13 @@ function openModal(r) {
 function toggle(i) {
   openIndex.value = openIndex.value === i ? -1 : i;
 }
+
+watch(term, onSearch);
+watch(zona, onSearch);
+watch(foodType, onSearch);
+watch(rating, onSearch)
+
+
 </script>
 
 <style scoped>
