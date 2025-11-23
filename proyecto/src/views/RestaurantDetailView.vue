@@ -14,6 +14,7 @@
         <p class="description">{{ r.description }}</p>
 
         <button class="btn-reserve" @click="book">Reservar</button>
+        <button v-if="isAdmin" class="btn-reserve" @click="eliminar">Eliminar restaurante</button>
         <button class="fav-btn" @click="toggleFav">
           {{ isFav ? "💗" : "🤍" }}
         </button>
@@ -32,7 +33,9 @@ import { useReservations } from "../stores/reservations.js";
 import { useAuth } from "../stores/auth.js";
 import { updateUser, updateUserWithToken } from "../services/users.api.js";  // ⬅ IMPORTANTE
 import BookingDrawer from "../components/BookingDrawer.vue";
+import { deleteRestaurant } from "../services/restaurants.api.js";
 
+const isAdmin = computed(() => auth.user?.role === "admin");
 const fallback = new URL("../assets/restaurant-placeholder.jpg", import.meta.url).href;
 
 const route = useRoute();
@@ -104,6 +107,20 @@ async function confirm(payload) {
   } catch (e) {
     console.error("Error creando reserva", e);
     alert("No se pudo crear la reserva: " + (e.message || e));
+  }
+}
+
+async function eliminar() {
+  try {
+    const id = r.value._id || r.value.id;
+
+    await deleteRestaurant(id);
+
+    alert("Restaurante eliminado correctamente");
+    window.location.href = "/restaurantes";
+  } catch (err) {
+    console.error("Error eliminando restaurante", err);
+    alert("Hubo un error al eliminar el restaurante");
   }
 }
 </script>
