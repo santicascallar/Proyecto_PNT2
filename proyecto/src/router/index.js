@@ -25,6 +25,7 @@ const routes = [
   { path: "/login", name: "login", component: Login },
   { path: "/registro", name: "register", component: Register },
   { path: "/admin", name: "admin", component: Admin },
+  { path: "/reports", name: "reports", component: () => import("../views/ReportsView.vue"), meta: { requiresAuth: true, requiresAdmin: true } },
   { path: "/:pathMatch(.*)*", redirect: "/" },
 ];
 
@@ -39,6 +40,17 @@ router.beforeEach((to) => {
   if (to.meta && to.meta.requiresAuth) {
     const token = localStorage.getItem("rf_token");
     if (!token) return { name: "login", query: { redirect: to.fullPath } };
+  }
+
+  if (to.meta && to.meta.requiresAdmin) {
+    const raw = localStorage.getItem("rf_user");
+    let user = null;
+    try {
+      user = raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      user = null;
+    }
+    if (!user || user.role !== "admin") return { name: "home" };
   }
 });
 
