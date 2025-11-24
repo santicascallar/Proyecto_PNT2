@@ -68,15 +68,15 @@ const submitForm = async () => {
       address: form.value.address,
       cuisine: form.value.cuisine,
       rating: form.value.rating,
-      //priceRange: form.value.priceRange,
       imageUrl: form.value.imageUrl,
-      location: { 
+      location: {
         zone: form.value.zone,
         lat: form.value.lat,
         lng: form.value.lng
       },
       description: form.value.description,
     };
+
 
     await createRestaurant(payload);
 

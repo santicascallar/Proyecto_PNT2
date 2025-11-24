@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_URL ; 
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 // --- Función base de request ---
 async function request(path, options = {}) {
@@ -21,24 +21,46 @@ export const getRestaurants = async (params = {}) => {
 
 export const getRestaurantById = (id) => request(`/restaurants/${id}`);
 
-export const createRestaurant = (payload) =>
-  request("/restaurants", {
+export const createRestaurant = async (payload) => {
+  const token = localStorage.getItem("token");
+  return request("/restaurants", {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify(payload),
   });
+};
 
-export const updateRestaurant = (id, payload) =>
+export const updateRestaurant = (id, payload) => {
+  const token = localStorage.getItem("token");
   request(`/restaurants/${id}`, {
     method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
     body: JSON.stringify(payload),
   });
+};
 
 export async function getLeastBookedRestaurant() {
   const res = await fetch(`${BASE_URL}/restaurants/least-booked`);
   if (!res.ok) throw new Error("Error obteniendo restaurante promocionado");
   return await res.json();
 }
-export const deleteRestaurant = (id) => request(`/restaurants/${id}`, { method: "DELETE" });
+export const deleteRestaurant = (id, payload) => {
+  const token = localStorage.getItem("token");
+  request(`/restaurants/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+};
 
 export const getLeastReservationsTuesday = async (limit = 5) => {
   return request(`/reports/least-reservations-tuesday?limit=${limit}`);
