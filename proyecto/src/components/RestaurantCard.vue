@@ -1,6 +1,5 @@
 <template>
   <article class="card item">
-    <!-- Imagen del restaurante -->
     <div class="thumb">
       <img
         :src="imageSrc"
@@ -9,12 +8,16 @@
         @error="onImgError"
       />
     </div>
-
-    <!-- Contenido -->
     <div class="body">
       <h3>{{ restaurant.name }}</h3>
       <p class="muted">
-        {{ restaurant.cuisine }} • {{ restaurant.priceRange || restaurant.price }} • {{ restaurant.rating }}
+        {{ restaurant.cuisine }}
+      </p>
+      <p class="muted">
+        {{ restaurant.rating}}⭐
+      </p>
+      <p class="muted">
+        {{ restaurant.zona }}
       </p>
 
       <div class="meta">
@@ -26,7 +29,6 @@
         <router-link :to="`/restaurantes/${restaurant._id || restaurant.id}`" class="ghost">
           Ver detalle
         </router-link>
-        <button @click="$emit('book', restaurant)">Reservar</button>
       </div>
     </div>
   </article>
@@ -34,24 +36,16 @@
 
 <script setup>
 import { computed } from "vue";
-
-// props
 const props = defineProps({
   restaurant: { type: Object, required: true }
 });
-
-// fallback local
 const FALLBACK = new URL("../assets/restaurant-placeholder.jpg", import.meta.url).href;
-
-// lógica de la imagen
 const imageSrc = computed(() =>
-  props.restaurant.imageUrl || // del backend
-  props.restaurant.cover ||    // tu campo actual
-  props.restaurant.image ||    // por si hay otro nombre
-  FALLBACK                     // si no hay imagen, fallback
+  props.restaurant.imageUrl ||
+  props.restaurant.cover ||
+  props.restaurant.image ||
+  FALLBACK
 );
-
-// si la imagen falla al cargar  muestra fallback
 function onImgError(e) {
   e.target.src = FALLBACK;
 }
@@ -85,8 +79,6 @@ function onImgError(e) {
   object-fit: cover;
   display: block;
 }
-
-/* Contenido */
 .body {
   padding: 1rem;
   display: grid;

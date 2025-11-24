@@ -7,7 +7,7 @@ import { onMounted, onBeforeUnmount, watch, ref } from 'vue'
 import L from 'leaflet'
 
 const props = defineProps({
-  restaurants: { type: Array, default: () => [] } // cada item: {_id/name, location:{lat,lng}, name, ...}
+  restaurants: { type: Array, default: () => [] }
 })
 const emit = defineEmits(['select'])
 
@@ -17,7 +17,7 @@ let map, markersLayer
 onMounted(() => {
   map = L.map(el.value, {
     zoomControl: true,
-    center: [-34.6037, -58.3816], // CABA
+    center: [-34.6037, -58.3816],
     zoom: 12
   })
 
@@ -36,30 +36,33 @@ watch(() => props.restaurants, (list) => {
 }, { deep: true })
 
 function renderMarkers(list) {
-  if (!markersLayer) return
-  markersLayer.clearLayers()
-  const points = []
+  if (!markersLayer) return;
+
+  markersLayer.clearLayers();
+
+  const points = [];
 
   list.forEach(r => {
-    const loc = r?.location
-    if (!loc || typeof loc.lat !== 'number' || typeof loc.lng !== 'number') return
-    const m = L.marker([loc.lat, loc.lng]).addTo(markersLayer)
-    m.bindPopup(r.name || 'Restaurante')
-    m.on('click', () => emit('select', r))
-    points.push([loc.lat, loc.lng])
-  })
+    const loc = r.location;
+    if (!loc || typeof loc.lat !== 'number' || typeof loc.lng !== 'number') return;
 
-  if (points.length) {
-    const bounds = L.latLngBounds(points)
-    map.fitBounds(bounds, { padding: [30, 30] })
+    const marker = L.marker([loc.lat, loc.lng]).addTo(markersLayer);
+    marker.bindPopup(r.name || 'Restaurante');
+    marker.on('click', () => emit('select', r));
+
+    points.push([loc.lat, loc.lng]);
+  });
+  if (points.length > 0) {
+    const bounds = L.latLngBounds(points);
+    map.fitBounds(bounds, { padding: [50, 50] });
   }
 }
 </script>
 
 <style scoped>
-.map{
+.map {
   width: 100%;
-  height: 520px;         /* se adapta al layout */
+  height: 520px;
   border-radius: 16px;
   overflow: hidden;
 }

@@ -32,6 +32,6 @@ const password = ref('')
 
 async function onSubmit () {
   await auth.login(email.value, password.value)
-  if (auth.user) router.push('/perfil')  //  redirige si logueó ok
+  if (auth.user) router.push('/perfil')
 }
 </script>

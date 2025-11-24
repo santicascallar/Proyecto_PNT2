@@ -1,83 +1,79 @@
-import { defineStore } from 'pinia'
+import { defineStore } from "pinia";
+import { register as registerRequest, login as loginRequest } from "../services/auth.api.js";
+import { getUserById } from "../services/users.api.js";
 
-const USERS_KEY = 'rf_users'  // array de usuarios registrados
-const LS_KEY    = 'rf_user'   // usuario actualmente logueado
+const LS_USER = "rf_user";
+const LS_TOKEN = "rf_token";
 
-function loadUsers() {
-  try { return JSON.parse(localStorage.getItem(USERS_KEY) || '[]') } catch { return [] }
-}
-function saveUsers(users) {
-  localStorage.setItem(USERS_KEY, JSON.stringify(users))
-}
-
-export const useAuth = defineStore('auth', {
+export const useAuth = defineStore("auth", {
   state: () => ({
-    user: JSON.parse(localStorage.getItem(LS_KEY) || 'null'),
+    user: JSON.parse(localStorage.getItem(LS_USER) || "null"),
+    token: localStorage.getItem(LS_TOKEN) || null,
     loading: false,
     error: null,
   }),
+
   getters: {
-    isLogged: (s) => !!s.user,
+    isLogged: (s) => !!s.token,
+    isAdmin: (s) => s.user?.role === "admin",
+    isClient: (s) => s.user?.role === "client",
   },
+
   actions: {
-    async register({ name, email, password }) {
+    async loadUser() {
+      if (!this.user) return;
+      const id = this.user._id || this.user.id;
+
       try {
-        this.loading = true
-        this.error = null
-        await new Promise(r => setTimeout(r, 400))
-
-        const users = loadUsers()
-        const exists = users.some(u => u.email.toLowerCase() === email.toLowerCase())
-        if (exists) {
-          this.error = 'Ese email ya está registrado'
-          return
-        }
-
-        const newUser = { id: Date.now(), name, email, password }
-        users.push(newUser)
-        saveUsers(users)
-
-        // Autologin tras registrar
-        this.user = { id: newUser.id, name: newUser.name, email: newUser.email }
-        localStorage.setItem(LS_KEY, JSON.stringify(this.user))
+        const fresh = await getUserById(id);
+        this.user = fresh;
+        localStorage.setItem(LS_USER, JSON.stringify(fresh));
       } catch (e) {
-        this.error = 'No pudimos registrar tu cuenta'
+        console.error("Error recargando usuario:", e);
+      }
+    },
+
+    async register(payload) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const res = await registerRequest(payload);
+        this.user = res.user || res;
+        this.token = res.token || this.token;
+        localStorage.setItem(LS_USER, JSON.stringify(this.user));
+        if (res.token) localStorage.setItem(LS_TOKEN, res.token);
+        return res;
+      } catch (e) {
+        this.error = e.message || "Error al registrar";
+        throw e;
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
 
     async login(email, password) {
+      this.loading = true;
+      this.error = null;
       try {
-        this.loading = true
-        this.error = null
-        await new Promise(r => setTimeout(r, 300))
-
-        const users = loadUsers()
-        const found = users.find(u =>
-          u.email.toLowerCase() === String(email).toLowerCase() &&
-          String(u.password) === String(password)
-        )
-
-        if (!found) {
-          this.error = 'Credenciales inválidas'
-          this.user = null
-          localStorage.removeItem(LS_KEY)
-          return
-        }
-
-        this.user = { id: found.id, name: found.name, email: found.email }
-        localStorage.setItem(LS_KEY, JSON.stringify(this.user))
+        const res = await loginRequest({ email, password });
+        this.user = res.user || res;
+        this.token = res.token || this.token;
+        localStorage.setItem(LS_USER, JSON.stringify(this.user));
+        if (res.token) localStorage.setItem(LS_TOKEN, res.token);
+        return res;
       } catch (e) {
-        this.error = 'No pudimos iniciar sesión'
+        this.error = e.message || "Las credenciales son inválidas";
+        throw e;
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
 
     logout() {
-      this.user = null
-      localStorage.removeItem(LS_KEY)
-    }
-  }
-})
+      this.user = null;
+      this.token = null;
+      localStorage.removeItem(LS_USER);
+      localStorage.removeItem(LS_TOKEN);
+    },
+  },
+});

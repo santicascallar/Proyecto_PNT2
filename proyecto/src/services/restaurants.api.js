@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_URL;
+const BASE_URL = import.meta.env.VITE_API_URL ; 
 
 // --- Función base de request ---
 async function request(path, options = {}) {
@@ -15,7 +15,6 @@ async function request(path, options = {}) {
 
 // --- RESTAURANTES ---
 export const getRestaurants = async (params = {}) => {
- 
   const query = new URLSearchParams(params).toString();
   return request(`/restaurants${query ? `?${query}` : ""}`);
 };
@@ -34,9 +33,12 @@ export const updateRestaurant = (id, payload) =>
     body: JSON.stringify(payload),
   });
 
-export const deleteRestaurant = (id) =>
-  request(`/restaurants/${id}`, { method: "DELETE" });
-
+export async function getLeastBookedRestaurant() {
+  const res = await fetch(`${BASE_URL}/restaurants/least-booked`);
+  if (!res.ok) throw new Error("Error obteniendo restaurante promocionado");
+  return await res.json();
+}
+export const deleteRestaurant = (id) => request(`/restaurants/${id}`, { method: "DELETE" });
 
 export default {
   getRestaurants,
