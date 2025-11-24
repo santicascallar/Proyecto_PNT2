@@ -40,10 +40,20 @@ export async function getLeastBookedRestaurant() {
 }
 export const deleteRestaurant = (id) => request(`/restaurants/${id}`, { method: "DELETE" });
 
+export const getLeastReservationsTuesday = async (limit = 5) => {
+  return request(`/reports/least-reservations-tuesday?limit=${limit}`);
+};
+
+export const getTopRestaurants = async (period = 30, limit = 5) => {
+  return request(`/reports/top-restaurants?period=${period}&limit=${limit}`);
+};
+
 export default {
   getRestaurants,
   getRestaurantById,
   createRestaurant,
   updateRestaurant,
   deleteRestaurant,
+  getLeastReservationsTuesday,
+  getTopRestaurants
 };
