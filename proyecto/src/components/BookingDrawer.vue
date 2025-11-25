@@ -11,7 +11,7 @@
           <label>Personas <input v-model.number="payload.people" type="number" min="1" required class="input"></label>
           <div class="row">
             <button type="submit">Confirmar</button>
-            <button type="button" @click="close" class="ghost">Cancelar</button>
+            <button type="button" @click="close">Cancelar</button>
           </div>
         </form>
       </div>

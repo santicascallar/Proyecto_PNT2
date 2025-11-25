@@ -67,9 +67,9 @@ function refresh() {
 
 .refresh {
   padding: 0.5rem 0.9rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #5b14ff;
   border-radius: 0.6rem;
-  background: #fff;
+  background: #5b14ff;
   cursor: pointer;
 }
 

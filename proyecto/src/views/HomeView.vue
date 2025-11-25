@@ -14,7 +14,7 @@
           <form class="search-form" @submit.prevent="onSearch">
             <label class="fgroup">
               <span>Nombre del restaurant</span>
-              <input v-model="term" type="text" placeholder="Ej: Don Julio" />
+              <input v-model="term" type="text" placeholder="Ej: Sabor local" />
             </label>
             <label class="fgroup">
               <span>Zona</span>
@@ -22,7 +22,7 @@
             </label>
             <label class="fgroup">
               <span>Tipo de comida</span>
-              <input v-model="foodType" type="text" placeholder="Ej: Japonesa" />
+              <input v-model="foodType" type="text" placeholder="Ej: Japanese" />
             </label>
             <div class="rating-row">
               <span>Calificación mínima</span>
