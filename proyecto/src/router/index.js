@@ -43,17 +43,6 @@ router.beforeEach((to) => {
     const token = localStorage.getItem("rf_token");
     if (!token) return { name: "login", query: { redirect: to.fullPath } };
   }
-
-  if (to.meta && to.meta.requiresAdmin) {
-    const raw = localStorage.getItem("rf_user");
-    let user = null;
-    try {
-      user = raw ? JSON.parse(raw) : null;
-    } catch (e) {
-      user = null;
-    }
-    if (!user || user.role !== "admin") return { name: "home" };
-  }
 });
 
 export default router;
