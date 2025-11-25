@@ -10,17 +10,28 @@ async function request(path, options = {}) {
   }
   return res.status === 204 ? null : res.json();
 }
-export const register = (payload) =>
-  request("/auth/register", {
+export const register = async (payload) => {
+  const data = await request("/auth/register", {
     method: "POST",
     body: JSON.stringify(payload),
   });
+  if (data.token) {
+    localStorage.setItem("token", data.token);
+  }
+  return data;
+};
 
-export const login = (payload) =>
-  request("/auth/login", {
+export const login = async (payload) => {
+  const data = await request("/auth/login", {
     method: "POST",
     body: JSON.stringify(payload),
   });
+  if (data.token) {
+    localStorage.setItem("token", data.token);
+  }
+  return data;
+};
+
 
 export default {
   register,

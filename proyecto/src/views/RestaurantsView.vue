@@ -54,9 +54,9 @@ onMounted(() => {
 
 .refresh {
   padding: .5rem .9rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #5b14ff;
   border-radius: .6rem;
-  background: #fff;
+  background: #5b14ff;
   cursor: pointer;
 }
 .refresh[disabled] { opacity: .6; cursor: not-allowed; }

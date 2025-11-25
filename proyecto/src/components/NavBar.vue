@@ -10,8 +10,8 @@
         <router-link v-if="isLogged" to="/favoritos">Favoritos</router-link>
         <router-link v-if="isLogged" to="/perfil">Mi perfil</router-link>
 
-        <router-link v-if="auth.isAdmin" to="/reports">Reportes</router-link>
         <router-link v-if="auth.isAdmin" to="/admin">Panel Admin</router-link>
+        <router-link v-if="auth.isAdmin" to="/restaurantForm" class="button">Agregar Restaurante</router-link>
       </nav>
 
       <div class="auth" v-if="!isLogged">
