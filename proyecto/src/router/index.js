@@ -12,6 +12,7 @@ const Preferences = () => import("../views/PreferencesView.vue");
 const Login = () => import("../views/AuthLoginView.vue");
 const Register = () => import("../views/AuthRegisterView.vue");
 const Admin = () => import("../views/admin/AdminDashboardView.vue");
+const RestaurantForm = () => import("../views/admin/RestaurantForm.vue");
 
 const routes = [
   { path: "/", name: "home", component: HomeView },
@@ -25,6 +26,8 @@ const routes = [
   { path: "/login", name: "login", component: Login },
   { path: "/registro", name: "register", component: Register },
   { path: "/admin", name: "admin", component: Admin },
+  { path: "/restaurantForm", name: "restaurantForm", component: RestaurantForm },
+  { path: "/reports", name: "reports", component: () => import("../views/ReportsView.vue"), meta: { requiresAuth: true, requiresAdmin: true } },
   { path: "/:pathMatch(.*)*", redirect: "/" },
 ];
 

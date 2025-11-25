@@ -4,12 +4,12 @@
 
     <form class="form card" style="padding:1rem; max-width:560px;" @submit.prevent="onSave">
       <label>
-        Nombre 
+        Nombre
         <input class="input" v-model="name" placeholder="Tu nombre" required />
       </label>
 
       <label>
-        Contacto 
+        Contacto
         <br></br>
         <input class="input" v-model="phone" placeholder="Teléfono" type="phone" required />
       </label>
@@ -44,18 +44,23 @@ async function onSave() {
 
     const updated = await updateUser(id, {
       name: name.value,
-      email: email.value
+      phone: phone.value
     })
+
     auth.user.name = updated.name
-    auth.user.email = updated.email
+    auth.user.phone = updated.phone
 
     alert("Perfil actualizado")
   } catch (e) {
     console.error(e)
   }
 }
+
 </script>
 
 <style scoped>
-.form { display: grid; gap: .6rem; }
+.form {
+  display: grid;
+  gap: .6rem;
+}
 </style>
