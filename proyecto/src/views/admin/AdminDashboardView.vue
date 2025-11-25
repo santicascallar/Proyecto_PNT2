@@ -27,31 +27,31 @@
           <td>{{ r.status }}</td>
           <td>{{ r.notes }}</td>
           <td>
-            <button @click="updateStatus(r._id, 'confirmed')">Aceptar</button>
-            <button @click="updateStatus(r._id, 'pending')">Rechazar</button>
-        </td>
+              <button v-if=" r.status !== 'confirmed'" @click=" updateStatus(r._id, 'confirmed')">Aceptar</button>
+              <button v-if="r.status !== 'cancelled'" @click="updateStatus(r._id, 'cancelled')">Cancelar</button>
+          </td>
         </tr>
       </tbody>
     </table>
 
     <h2 class="section-title">Restaurantes con menos reservas el martes</h2>
     <table v-if="reservations.length" class="card" style="padding:1rem; width:100%">
-    <tbody>
-      <tr v-for="r in leastTuesday" :key="r._id">
-        <td>{{ r.name }}</td>
-        <td>{{ r.tuesdayCount }}</td>
-      </tr>
-    </tbody>
+      <tbody>
+        <tr v-for="r in leastTuesday" :key="r._id">
+          <td>{{ r.name }}</td>
+          <td>{{ r.tuesdayCount }}</td>
+        </tr>
+      </tbody>
     </table>
 
     <h2 class="section-title">Restaurantes más reservados</h2>
     <table v-if="topRestaurants.length" class="card" style="padding:1rem; width:100%">
-    <tbody>
-      <tr v-for="r in topRestaurants" :key="r._id">
-        <td>{{ r.restaurant?.name }}</td>
-        <td>{{ r.count }}</td>
-      </tr>
-    </tbody>
+      <tbody>
+        <tr v-for="r in topRestaurants" :key="r._id">
+          <td>{{ r.restaurant?.name }}</td>
+          <td>{{ r.count }}</td>
+        </tr>
+      </tbody>
     </table>
   </section>
 </template>
@@ -107,7 +107,9 @@ async function updateStatus(id, newStatus) {
 table {
   border-collapse: collapse;
 }
-td, th {
+
+td,
+th {
   padding: .4rem .6rem;
   border-bottom: 1px solid #ddd;
 }

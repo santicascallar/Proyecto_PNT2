@@ -27,7 +27,6 @@ const routes = [
   { path: "/registro", name: "register", component: Register },
   { path: "/admin", name: "admin", component: Admin },
   { path: "/restaurantForm", name: "restaurantForm", component: RestaurantForm },
-  { path: "/reports", name: "reports", component: () => import("../views/ReportsView.vue"), meta: { requiresAuth: true, requiresAdmin: true } },
   { path: "/:pathMatch(.*)*", redirect: "/" },
 ];
 

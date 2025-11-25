@@ -4,7 +4,6 @@
   <main class="home">
     <section class="hero">
       <div class="hero__inner">
-        <!-- Columna izquierda: buscador -->
         <div class="search-card glass">
           <h1 class="search-card__title">
             Encontrá lugares para comer con ReservaFácil
@@ -38,8 +37,6 @@
             </div>
           </form>
         </div>
-
-        <!-- Columna derecha: mapa -->
         <div class="hero__map glass">
           <Map
             :restaurants="filteredRestaurants || restaurantsWithGeo"
@@ -247,7 +244,6 @@ watch(rating, onSearch);
 .home {
   min-height: 100vh;
   color: #e6ecff;
-  /* Poné tu imagen en src/assets/home-bg.jpg o cambiá la ruta de abajo */
   background:
     radial-gradient(circle at top left, rgba(129, 140, 248, 0.25), transparent 55%),
     radial-gradient(circle at bottom right, rgba(45, 212, 191, 0.18), transparent 50%),
